@@ -1,0 +1,1492 @@
+\documentclass[11pt]{amsart}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{enumitem}
+\usepackage{booktabs,array}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+
+\newcommand{\Gp}{G}
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\Fp}{\mathbb{F}_p}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Zp}{\mathbb{Z}_{(p)}}
+\newcommand{\leg}[2]{\left(\frac{#1}{#2}\right)}
+\newcommand{\fl}[1]{\left\lfloor #1 \right\rfloor}
+
+\title[A finite Euler--Clausen transfer for Ap\'ery-like sums]{A finite Euler--Clausen transfer for Ap\'ery-like sums,\\ with an application to a conjecture of Zhi-Hong Sun}
+
+\author{Huimin Zheng}
+\address{School of Information \& Network Engineering, Anhui Science and Technology University, Fengyang, Anhui 233100, People's Republic of China}
+\email{zhenghm@ahstu.edu.cn}
+\thanks{ORCID: 0009-0004-8605-2713}
+
+\subjclass[2020]{Primary 11A07; Secondary 11B65, 11E25, 33C20, 11F33}
+\keywords{Ap\'ery-like numbers; supercongruence; truncated hypergeometric series; Clausen's identity; Ramanujan-type series for $1/\pi$; binary quadratic forms}
+
+\begin{document}
+
+\begin{abstract}
+Let $G_n=\sum_{k=0}^n\binom{2k}{k}^2\binom{2n-2k}{n-k}4^{\,n-k}$ be the
+Ap\'ery-like sequence of Almkvist--Zudilin. We study the finite sums
+$\sum_{n<p}\binom{2n}{n}G_n/M^n$ and their first moments
+$\sum_{n<p}n\binom{2n}{n}G_n/M^n$ modulo powers of an odd prime $p$.
+The generating series
+$H(z)=\sum_{n\ge0}\binom{2n}{n}G_nz^n/64^n$ satisfies the exact identity
+$H(z)=K(4z(1-z))$, where
+$K(w)={}_3F_2(\frac14,\frac12,\frac34;1,1;w)$.
+We prove that truncating this identity at degree $p$ commutes with
+specialization at the center $z=\frac12$ up to $p^3$, and that its
+Euler derivative at any $p$-integral point with $1-z$ a $p$-unit is
+correct up to $p^2$; in both cases the first defect is computed
+explicitly and shown to possess a reflection symmetry, a
+constant-coefficient forcing equation and a short hypergeometric kernel.
+Combining these finite transfers with published special values of
+truncated triple-binomial sums (Sun, Sun--Ye) and with an explicit
+specialization of the general CM theorem of
+Chisholm--Deines--Long--Nebe--Swisher, we prove all nine formulas of
+Conjecture~2.4 of Z.-H.~Sun [\emph{New congruences involving
+Ap\'ery-like numbers}, arXiv:2004.07172v2]: three pairs of weighted
+congruences modulo $p^2$ with denominators
+$(72,576)$, $(48,-192)$, $(63,-4032)$, and the unweighted congruence with
+denominator $128$ modulo $p^3$.
+Selected algebraic components of the argument have been checked in Lean.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+For a nonnegative integer $n$, the Ap\'ery-like sequence studied in this
+paper is
+\begin{equation}\label{eq:Gdef}
+G_n=\sum_{k=0}^n\binom{2k}{k}^2\binom{2n-2k}{n-k}4^{\,n-k}
+\end{equation}
+(OEIS A143583; $1,12,164,2352,34596,\dots$). It is one of the sporadic
+second-kind Ap\'ery-like sequences of Almkvist--Zudilin \cite{AZ} and
+satisfies
+\[
+(n+1)^2G_{n+1}=(32n(n+1)+12)G_n-256n^2G_{n-1}\qquad(n\ge1).
+\]
+Zhi-Hong Sun~\cite{Sun24} initiated a systematic study of the
+$p$-adic behavior of the sums
+\begin{equation}\label{eq:sums}
+\sum_{n=0}^{p-1}\frac{\binom{2n}{n}G_n}{M^n},
+\qquad
+\sum_{n=0}^{p-1}\frac{n\binom{2n}{n}G_n}{M^n},
+\end{equation}
+and stated there a number of precise conjectures. The present paper is
+concerned with the following one \cite[Conjecture~2.4]{Sun24}.
+
+\begin{quote}\small
+\textbf{Conjecture (Z.-H.~Sun).} \emph{Let $p>3$ be a prime. Then}
+\[
+\begin{aligned}
+\sum_{n=0}^{p-1}\frac{n\binom{2n}{n}G_n}{72^n}
+&\equiv-8\sum_{n=0}^{p-1}\frac{n\binom{2n}{n}G_n}{576^n}\\
+&\equiv\begin{cases}
+4x^2-3p\pmod{p^2}&\text{if }p=x^2+4y^2\equiv1\pmod4,\\
+p\pmod{p^2}&\text{if }p\equiv3\pmod4,
+\end{cases}
+\end{aligned}
+\]
+\[
+\begin{aligned}
+\sum_{n=0}^{p-1}\frac{n\binom{2n}{n}G_n}{48^n}
+&\equiv4\sum_{n=0}^{p-1}\frac{n\binom{2n}{n}G_n}{(-192)^n}\\
+&\equiv\begin{cases}
+3p-4x^2\pmod{p^2}&\text{if }p=x^2+3y^2\equiv1\pmod3,\\
+-p\pmod{p^2}&\text{if }p\equiv2\pmod3,
+\end{cases}
+\end{aligned}
+\]
+\[
+\begin{aligned}
+\sum_{n=0}^{p-1}\frac{n\binom{2n}{n}G_n}{63^n}
+&\equiv64\sum_{n=0}^{p-1}\frac{n\binom{2n}{n}G_n}{(-4032)^n}\\
+&\equiv\begin{cases}
+-8(4x^2-3p)\pmod{p^2}&\text{if }p=x^2+7y^2\equiv1,2,4\pmod7,\\
+-8p\pmod{p^2}&\text{if }p\equiv3,5,6\pmod7,
+\end{cases}
+\end{aligned}
+\]
+\emph{and}
+\[
+\sum_{n=0}^{p-1}\frac{\binom{2n}{n}G_n}{128^n}\equiv
+\begin{cases}
+4x^2-2p-\dfrac{p^2}{4x^2}\pmod{p^3}&\text{if }p=x^2+2y^2\equiv1,3\pmod8,\\[2mm]
+\dfrac{p^2}{3}\binom{\lfloor p/4\rfloor}{\lfloor p/8\rfloor}^{-2}\pmod{p^3}
+&\text{if }p\equiv5\pmod8,\\[2mm]
+-\dfrac{3p^2}{2}\binom{\lfloor p/4\rfloor}{\lfloor p/8\rfloor}^{-2}\pmod{p^3}
+&\text{if }p\equiv7\pmod8.
+\end{cases}
+\]
+\end{quote}
+
+(The third pair involves the denominator $63$, so at $p=7$ the sums are
+not $p$-integral and the statement is understood for $p\ne7$.)
+
+\medskip
+
+\textbf{Why these sums are natural, and what was missing.}
+Sums of the shape \eqref{eq:sums} are the Ap\'ery-side incarnation of a
+classical theme going back to Van Hamme \cite{vH} and
+Rodriguez-Villegas~\cite{RV}: truncated hypergeometric series at CM
+points are expected to be congruent, modulo $p^2$ or $p^3$, to quantities
+built from binary quadratic forms. For the \emph{triple binomial sums}
+\begin{equation}\label{eq:TU}
+T_p(d)=\sum_{k=0}^{p-1}\frac{a_k}{d^k},
+\qquad
+U_p(d)=\sum_{k=0}^{p-1}\frac{k\,a_k}{d^k},
+\qquad
+a_k=\binom{2k}{k}^2\binom{4k}{2k}=\frac{(4k)!}{(k!)^4},
+\end{equation}
+an extensive theory now exists: Sun evaluated $U_p(648)$ and $U_p(-144)$
+modulo $p^2$ \cite[Theorems~2.9, 2.10]{SunBQF}, Sun--Ye evaluated
+$T_p(d)$ modulo $p^3$ at several CM points including $d=256$ and
+$d=-3969$ \cite[Theorems~1.5, 1.8]{SunYe}, and a general theorem of
+Chisholm--Deines--Long--Nebe--Swisher \cite[Theorem~1]{CDLNS} evaluates
+truncated CM Ramanujan-type sums modulo $p^2$, covering both ordinary
+and supersingular primes.
+
+The sums \eqref{eq:sums}, however, involve the Ap\'ery-like numbers
+$G_n$ themselves, not the triple binomial coefficients $a_k$. What
+separates the two is a \emph{finite transformation problem}: the
+generating series of $\binom{2n}{n}G_n/64^n$ is related to the
+${}_3F_2$ series $K(w)$ by the quadratic substitution $w=4z(1-z)$
+(Theorem~\ref{thm:A} below), but \emph{truncating} an identity of formal
+power series at degree $p$ and then specializing at a point is not
+congruence-compatible in general: the discarded tail $k>(p-1)/2$ has
+coefficients divisible only by $p^2$ (Lemma~\ref{lem:val}), and at a
+generic point this residual $p^2$ is exactly what one sees. The content
+of the present paper is that at the center $z=\frac12$ a further factor
+$p$ appears (so the center comparison holds modulo $p^3$), while the
+first $p^2$-defect at a generic point is an explicit polynomial
+$R_p(z)$ whose \emph{odd reflection symmetry} is responsible for the
+pairing relations in Sun's conjecture. Controlling this defect ---
+not evaluating any new CM period --- is the technical heart of the
+matter.
+
+\medskip
+
+\textbf{Main results.} Throughout, $p$ is an odd prime,
+$\Zp$ denotes the localization of $\Z$ at $p$, and
+\[
+H_p(z)=\sum_{n=0}^{p-1}\frac{\binom{2n}{n}G_n}{64^n}z^n,
+\qquad
+K_p(w)=\sum_{k=0}^{p-1}\frac{a_k}{256^k}w^k .
+\]
+
+\begin{itemize}
+\item \textbf{Theorem~\ref{thm:A}} (formal identity).
+$H(z)=K(4z(1-z))$ in $\Q[[z]]$; equivalently $H(z)=B(z)^2$ with
+$B(z)={}_2F_1(\frac14,\frac34;1;z)$.
+
+\item \textbf{Theorem~\ref{thm:B}} (center bridge). For \emph{every} odd
+prime $p$,
+\[
+\sum_{n=0}^{p-1}\frac{\binom{2n}{n}G_n}{128^n}
+\equiv\sum_{k=0}^{p-1}\frac{a_k}{256^k}\pmod{p^3}.
+\]
+
+\item \textbf{Theorem~\ref{thm:Bp}} (first defect at the center). The
+quotient of the difference by $p^3$ is given modulo $p$ by an explicit
+finite double sum \eqref{eq:Delta}; in particular the center comparison
+does \emph{not} lift to $p^4$ in general.
+
+\item \textbf{Theorem~\ref{thm:C}} (Euler transfer).
+$H_p(z)-K_p(4z(1-z))\in p^2\Zp[z]$, and the first defect has the form
+$p^2z^pR_p(z)\pmod{p^3}$ with $R_p(1-z)=-R_p(z)$.
+
+\item \textbf{Corollary~\ref{cor:pair}} (pairing and one-sided
+evaluations). For every $z$ with $z,1-z\in\Zp^\times$,
+\begin{gather*}
+(1-z)\,\mathcal W_p(z)+z\,\mathcal W_p(1-z)\equiv0\pmod{p^2},\\
+\mathcal W_p(z)\equiv\frac{1-2z}{1-z}\,(\theta_wK_p)(w(z))\pmod{p^2},
+\end{gather*}
+where $\mathcal W_p(z)=zH_p'(z)$ and $\theta_w=w\,\dd/\dd w$.
+
+\item \textbf{Theorem~\ref{thm:D}} (structure of the defect).
+$\mathcal SR_p=\varepsilon/4$ in $\Fp[z]$ for an explicit third-order
+operator $\mathcal S$ and $\varepsilon=\leg{-1}{p}$; $R_p$ factors as
+$(1-2z)J_p(4z(1-z))$ with an explicit hypergeometric kernel $J_p$ of
+degree $\lfloor(p-3)/4\rfloor$; and $R_p$ is determined by a polynomial
+integral invariant with a characteristic-$p$ correction term $z^p$.
+
+\item \textbf{Theorems~\ref{thm:128split} and \ref{thm:128inert}}
+(denominator $128$ modulo $p^3$).
+The last displayed formula of the conjecture holds: the split branch by
+combining Theorem~\ref{thm:B} with \cite[Theorem~1.5]{SunYe}, the inert
+branches by combining it with a jet comparison
+(Proposition~\ref{prop:jet}) and an exact rational identity
+$\mathcal Q_a(\tfrac12)=-\bigl(2^{a-1}/(a\binom{a-1}{(a-1)/2})\bigr)^2$
+for odd $a$ (Theorem~\ref{thm:E}) proved by a symmetric-square method.
+
+\item \textbf{Theorem~\ref{thm:final}}. All nine formulas of Sun's
+Conjecture~2.4 hold.
+\end{itemize}
+
+\textbf{What is new and what is cited.} The finite transfers
+(Theorems~\ref{thm:B}, \ref{thm:Bp}, \ref{thm:C}, \ref{thm:D}),
+the symmetric-square identity (Theorem~\ref{thm:E}) and the assembly are
+proved here. All CM special values of the triple binomial sums are taken
+from the literature: \cite[Theorems~2.9, 2.10 and Remark~2.3]{SunBQF},
+\cite[Theorems~1.5, 1.8]{SunYe}, \cite[Theorem~5.1]{SunL2}, and the
+general CM theorem \cite[Theorem~1]{CDLNS}, whose specialization to the
+$65k+8$ series at $\lambda=-256/3969$ we verify in detail, including the
+two primes $p=5,13$ excluded by its unit hypotheses
+(Proposition~\ref{prop:ram65}). The classical identity
+$\sum_{k\ge0}(65k+8)a_k/(-3969)^k=9\sqrt7/\pi$ \cite[Table~2]{Guillera}
+is used only to identify the parameters of that theorem.
+Mao--Liu \cite[Theorem~1.10]{MaoLiu} have obtained the \emph{quadratic}
+and $1/(2n-1)$ moments of the denominator-$128$ sum modulo $p^2$ by a
+different reduction; their results neither contain nor follow from the
+present ones (different weights, different modulus). The unweighted
+denominator-$128$ sum modulo $p^3$ and the linear moments at
+$72,576,48,-192,63,-4032$ do not appear in the literature we surveyed;
+we make no claim of priority beyond this.
+
+Other recent results on the same Ap\'ery-like family concern parameter
+moments without the additional central-binomial weight
+\cite{MaoYang,Mao}, or Christoffel--Darboux identities and endpoint
+congruences for the polynomial families $g_n(x)$ and $v_n(x)$
+\cite{SunCD}.  These works provide useful context but do not furnish the
+finite quadratic pullback used here.  This distinction is important:
+the new step in the present argument is not another isolated CM
+evaluation, but control of the error created by truncating that pullback.
+
+\medskip
+
+\textbf{Outline.} Section~2 proves the formal identity.
+Section~3 proves the center bridge and its first defect.
+Section~4 proves the Euler transfer and the pairing corollary.
+Section~5 analyses the defect polynomial $R_p$.
+Section~6 assembles the three weighted pairs from the cited special
+values, with the exceptional primes settled directly.
+Section~7 proves the denominator-$128$ formulas modulo $p^3$.
+Section~8 states the final corollary and some remarks, including an
+obstruction to a naive finite Pfaff transformation.
+Appendix~A collects the finite exceptional-prime certificates;
+Appendices~B and~C give the self-contained proofs of the jet comparison
+and of the symmetric-square identity; Appendix~D describes the
+computational checks.
+
+\medskip
+
+\textbf{Acknowledgments.} The proofs and the initial manuscript draft
+were developed with substantial assistance from OpenAI's Codex. The
+author reviewed the mathematical arguments, computational checks,
+references, and final presentation and assumes responsibility for the
+contents of the article.
+
+\medskip
+\noindent\textbf{Data availability.} No datasets were generated or
+analysed in this work.  The finite computations described in
+Appendix~\ref{app:D} are reproducible from the displayed definitions.
+
+\medskip
+\noindent\textbf{Competing interests.} The author declares no competing
+interests.
+
+\section{Notation and the generating-function identity}\label{sec:2}
+
+Throughout $p$ is an odd prime and $v_p$ the $p$-adic valuation. We set
+\[
+a_k=\binom{2k}{k}^2\binom{4k}{2k}=\frac{(4k)!}{(k!)^4},
+\qquad
+c_k=\frac{a_k}{256^k},
+\qquad
+h_n=\frac{\binom{2n}{n}G_n}{64^n},
+\]
+\[
+H(z)=\sum_{n\ge0}h_nz^n,\qquad
+K(w)=\sum_{k\ge0}c_kw^k
+={}_3F_2\Bigl(\tfrac14,\tfrac12,\tfrac34;1,1;w\Bigr),
+\]
+and denote by $H_p$, $K_p$ the truncations at degree $p-1$. Write
+\[
+s=z(1-z),\qquad t=1-2z,\qquad w=w(z)=4s .
+\]
+
+\begin{lemma}[valuation]\label{lem:val}
+For $0\le k<p$ one has
+$v_p(a_k)=v_p(c_k)=\fl{4k/p}$; in particular $v_p(c_k)\ge2$ for
+$k>(p-1)/2$, and $v_p(c_k)\ge3$ for $k\ge(3p+1)/4$.
+\end{lemma}
+
+\begin{proof}
+Since $k<p$, $v_p(k!)=0$, and $4k\le4(p-1)<p^2$ because
+$p^2-4(p-1)=(p-2)^2>0$; hence $v_p(a_k)=v_p((4k)!)=\fl{4k/p}$.
+\end{proof}
+
+\begin{theorem}[formal identity]\label{thm:A}
+In $\Q[[z]]$,
+\[
+H(z)=K(4z(1-z)).
+\]
+Equivalently $H(z)=B(z)^2$, where
+\[
+B(z)={}_2F_1\Bigl(\frac14,\frac34;1;z\Bigr)
+=\sum_{n\ge0}\binom{2n}{n}\binom{4n}{2n}\frac{z^n}{64^n}.
+\]
+\end{theorem}
+
+\begin{proof}
+\emph{Step 1: a second-order equation for $g(x)=\sum_{n\ge0}G_nx^n$.}
+Since $(1-16x)^{-1/2}=\sum_{m\ge0}\binom{2m}{m}(4x)^m$ and
+${}_2F_1(\frac12,\frac12;1;16x)=\sum_{k\ge0}\binom{2k}{k}^2x^k$,
+the defining convolution \eqref{eq:Gdef} is exactly the Cauchy product
+\begin{equation}\label{eq:cauchy}
+g(x)=(1-16x)^{-1/2}\,{}_2F_1\Bigl(\tfrac12,\tfrac12;1;16x\Bigr).
+\end{equation}
+The hypergeometric factor satisfies the Gauss equation
+$x(1-16x)u''+(1-32x)u'-4u=0$; substituting
+$u=(1-16x)^{1/2}g$ and clearing the invertible factor gives
+\[
+x(1-16x)^2g''+(1-48x)(1-16x)g'+(256x-12)g=0,
+\]
+i.e. coefficientwise
+\begin{equation}\label{eq:Grec}
+(n+1)^2G_{n+1}=(32n(n+1)+12)G_n-256n^2G_{n-1}\qquad(n\ge1).
+\end{equation}
+
+\emph{Step 2: a third-order equation for $H$.}
+Inserting $G_n=64^nh_n/\binom{2n}{n}$ into \eqref{eq:Grec} and using
+$\binom{2n+2}{n+1}/\binom{2n}{n}=2(2n+1)/(n+1)$ gives the exact
+three-term recurrence
+\begin{equation}\label{eq:hrec}
+(n+1)^3h_{n+1}
+=(2n+1)\Bigl(n(n+1)+\tfrac38\Bigr)h_n
+-\frac{n(2n-1)(2n+1)}{4}h_{n-1}.
+\end{equation}
+Hence, with $\theta=z\,\dd/\dd z$, $H$ is annihilated by
+\[
+\theta^3-\frac z8(2\theta+1)\bigl(8\theta(\theta+1)+3\bigr)
++\frac{z^2}4(\theta+1)\bigl(4(\theta+1)^2-1\bigr)=z\mathcal S,
+\]
+where
+\begin{equation}\label{eq:S}
+\mathcal S=s^2\partial_z^3+3st\,\partial_z^2
++\Bigl(t^2-\tfrac{11}{4}s\Bigr)\partial_z-\tfrac38t .
+\end{equation}
+
+\emph{Step 3: symmetric square.} $B$ satisfies the Gauss equation
+$\mathcal D B=0$ with
+$\mathcal D=z(1-z)\partial_z^2+(1-2z)\partial_z-\frac3{16}$, and $\mathcal S$
+is the corresponding symmetric-square operator: for any $f,v$ one has
+the exact product identity
+\begin{equation}\label{eq:symmsq}
+\mathcal S(fv)=sf(\mathcal Dv)'+(3sf'+tf)\mathcal Dv
++sv(\mathcal Df)'+(3sv'+tv)\mathcal Df ,
+\end{equation}
+so $\mathcal S(B^2)=0$. Both $H$ and $B^2$ have constant term $1$, and
+in \eqref{eq:hrec} the leading coefficient $(n+1)^3$ is invertible in
+$\Q$; hence a solution of $\mathcal SY=0$ in $\Q[[z]]$ is uniquely
+determined by its constant term, and $H=B^2$.
+
+\emph{Step 4: the quadratic substitution.}
+The ratio $c_k/c_{k-1}=\frac{(k-\frac14)(k-\frac12)(k-\frac34)}{k^3}$
+shows that $K$ is annihilated by
+\[
+\mathcal M=w^2(1-w)\partial_w^3+w\Bigl(3-\tfrac92w\Bigr)\partial_w^2
++\Bigl(1-\tfrac{51}{16}w\Bigr)\partial_w-\tfrac3{32}.
+\]
+Writing $s=z(1-z)$, $t=1-2z$ and differentiating
+$K(w(z))$ formally (using $w'=4t$, $t^2=1-w$) gives the exact
+operator identity, valid without applying $\mathcal MK=0$,
+\begin{equation}\label{eq:pullback}
+\mathcal S_z\bigl[K(w(z))\bigr]=4t\,(\mathcal M_wK)(w(z)).
+\end{equation}
+Hence $\mathcal S(K\circ w)=0$. Since $K(w(z))$ has constant term $1$,
+the same uniqueness argument gives $H=K\circ w$. The equivalence of the
+two forms is Clausen's identity
+${}_2F_1(\frac14,\frac34;1;z)^2
+={}_3F_2(\frac14,\frac12,\frac34;1,1;4z(1-z))$.
+\end{proof}
+
+\begin{remark}
+The identity $H=B^2$ is of classical Clausen type
+(compare \cite{CTYZ}); we included the operator derivation above because
+every subsequent argument truncates \eqref{eq:pullback} at degree $p$,
+and the truncation error is computed from the same two operators.
+\end{remark}
+
+For later use we record the finite form of the Clausen step. Let
+$b_k=\binom{2k}{k}\binom{4k}{2k}/64^k$ and
+$B_p(t)=\sum_{k<p}b_kt^k$.
+
+\begin{proposition}[finite Clausen square]\label{prop:fclausen}
+For every odd prime $p$,
+\[
+K_p\bigl(4t(1-t)\bigr)\equiv B_p(t)^2\pmod{p^2}
+\qquad\text{in }\Zp[t].
+\]
+\end{proposition}
+
+\begin{proof}
+Coefficients of degree $<p$ agree exactly by Theorem~\ref{thm:A}.
+On the left, terms with $k>(p-1)/2$ vanish modulo $p^2$ by
+Lemma~\ref{lem:val}, and $k\le(p-1)/2$ contributes degree $\le p-1$
+only. On the right, the coefficient of degree $n\ge p$ is
+$\sum_{i+j=n}b_ib_j$. For $0\le i<p$,
+\[
+v_p(b_i)=v_p\Bigl(\tfrac{(4i)!}{(2i)!}\Bigr)=\fl{\tfrac{4i}{p}}-\fl{\tfrac{2i}{p}}
+=\begin{cases}0,&i<p/4,\\1,&p/4<i<3p/4,\\2,&3p/4<i<p.\end{cases}
+\]
+If $i+j\ge p$ then either one index is $<p/4$ and the other $>3p/4$, or
+both indices are $\ge p/4$; in both cases $v_p(b_ib_j)\ge2$.
+\end{proof}
+
+\section{The center bridge modulo \texorpdfstring{$p^3$}{p-cubed}}\label{sec:3}
+
+\begin{theorem}[center bridge]\label{thm:B}
+For every odd prime $p$,
+\[
+\sum_{n=0}^{p-1}\frac{\binom{2n}{n}G_n}{128^n}
+\equiv\sum_{k=0}^{p-1}\frac{a_k}{256^k}\pmod{p^3}.
+\]
+\end{theorem}
+
+\begin{proof}
+Truncate the identity of Theorem~\ref{thm:A} at degree $<p$ and then set
+$z=\frac12$. Since $w(z)=4z(1-z)$ has vanishing order $1$, the terms
+$k\ge p$ of $K$ do not meet the coefficients of degree $<p$, so
+\begin{equation}\label{eq:Rpk}
+H_p\Bigl(\tfrac12\Bigr)=\sum_{k=0}^{p-1}c_kR_{p,k},
+\qquad
+R_{p,k}=\sum_{j=0}^{\min(k,p-1-k)}(-1)^j\binom{k}{j}2^{\,k-j}\in\Z .
+\end{equation}
+Everything takes place in a finite polynomial ring; no infinite series is
+evaluated at the degenerate point $w=1$.
+
+If $2k<p$ the full binomial expansion of $(2-1)^k$ is present and
+$R_{p,k}=1$ exactly.
+
+If $2k>p$, write $r=p-1-k$, so $0\le r<k<p$. For $0\le j\le r$ the
+factor $j!$ is a $p$-unit and $k\equiv-1-r\pmod p$, hence
+\[
+\binom{k}{j}\equiv(-1)^j\binom{r+j}{j}\pmod p .
+\]
+Combining with the weight $2^{k-j}$ and the finite identity
+\begin{equation}\label{eq:pascal}
+\sum_{j=0}^{r}\binom{r+j}{j}2^{-j}=2^r
+\qquad\text{in }\Q
+\end{equation}
+(proof: if $S_r$ denotes the left side, Pascal's rule gives
+$S_r=S_{r-1}+2^{-r}\binom{2r-1}{r}+\frac12\bigl(S_r-2^{-r}\binom{2r}{r}\bigr)$,
+and $\binom{2r}{r}=2\binom{2r-1}{r}$ forces $S_r=2S_{r-1}$), we obtain
+\[
+R_{p,k}\equiv2^{k+r}=2^{p-1}\equiv1\pmod p .
+\]
+By Lemma~\ref{lem:val}, the high range $2k>p$ has $v_p(c_k)\ge2$, so each
+summand $c_k(R_{p,k}-1)$ lies in $p^3\Zp$; the low-range summands vanish
+exactly. Summing over $k$ gives the claim, for all odd $p$ including
+$p=3$.
+\end{proof}
+
+\begin{remark}
+The extra factor $p$ at the center has a visible combinatorial origin:
+the quadratic coordinate $4z(1-z)$, the reflection
+$k\leftrightarrow p-1-k$ of the truncated binomial expansion, and the
+carry valuation $\fl{4k/p}$ cooperate. No such extra factor exists at a
+generic point (Section~\ref{sec:4}).
+\end{remark}
+
+The theorem is sharp: the difference is exactly divisible by $p^3$ in
+the smallest cases, and its quotient modulo $p$ is as follows.
+
+\begin{theorem}[first defect at the center]\label{thm:Bp}
+Let $p$ be an odd prime, $m=(p-1)/2$, and
+$\Delta_p=p^{-3}\bigl(H_p(\frac12)-K_p(1)\bigr)\in\Zp$. Then
+\begin{equation}\label{eq:Delta}
+\Delta_p\equiv
+\sum_{k=(p+1)/2}^{\lfloor(3p-1)/4\rfloor}
+\frac{a_k}{p^2}\,256^{-k}
+\sum_{j=p-k}^{m}\frac{\binom{2j}{j}}{2j\,4^j}
+\pmod p .
+\end{equation}
+For $p=3,5,7,11,13,17$ the values are $1,1,2,1,5,12$ respectively; in
+particular the center comparison does not lift to $p^4$ in general.
+\end{theorem}
+
+\begin{proof}
+For $m<k<p$ write $r=p-1-k$. Since $r+i\le2r<p$, all denominators in
+\[
+(-1)^j\binom{k}{j}
+=\binom{r+j}{j}\prod_{i=1}^{j}\Bigl(1-\frac{p}{r+i}\Bigr)
+\]
+are $p$-units, and expanding to first order,
+\[
+R_{p,k}\equiv2^k\bigl(2^r-pU_r\bigr)\pmod{p^2},
+\qquad
+U_r=\sum_{j=0}^{r}\binom{r+j}{j}2^{-j}(H_{r+j}-H_r),
+\]
+with $H_n$ the harmonic numbers. The polynomial
+$P_r(X)=\sum_{j=0}^r\binom{r+X+j}{j}2^{-j}$ satisfies
+$P_r(X)=2P_{r-1}(X)+2^{-r}\frac{X}{r+X}\binom{2r+X-1}{r}$
+by Pascal's rule; differentiating at $X=0$ (a finite polynomial
+operation) gives
+$U_r=2U_{r-1}+\binom{2r}{r}/(r2^{r+1})$, hence the exact identity
+\[
+2^{-r}U_r=L_r:=\sum_{j=1}^{r}\frac{\binom{2j}{j}}{2j\,4^j}.
+\]
+Therefore, with $q_p(2)=(2^{p-1}-1)/p$,
+\begin{equation}\label{eq:Rexp}
+\frac{R_{p,k}-1}{p}\equiv q_p(2)-L_r\pmod p .
+\end{equation}
+At the boundary $k=r=m$ one has $R_{p,m}=1$ exactly, whence
+$q_p(2)\equiv L_m\pmod p$ and the bracket in \eqref{eq:Rexp} is
+$L_m-L_r=\sum_{j=r+1}^{m}\binom{2j}{j}/(2j4^j)$. Finally
+$\Delta_p=\sum_{k=m+1}^{p-1}\frac{a_k}{p^2}256^{-k}\frac{R_{p,k}-1}{p}$;
+by Lemma~\ref{lem:val}, $\frac{a_k}{p^2}$ is integral, and it is
+divisible by $p$ once $4k\ge3p$ (equality $4k=3p$ is impossible), so
+exactly the range $m<k$, $4k<3p$ survives, giving \eqref{eq:Delta}.
+The listed values are obtained by direct exact evaluation.
+\end{proof}
+
+\section{The Euler transfer modulo \texorpdfstring{$p^2$}{p-squared} and the pairing}\label{sec:4}
+
+Write
+\[
+D_p(z)=H_p(z)-K_p(w(z))\in\Q[z],
+\qquad w(z)=4z(1-z).
+\]
+
+\begin{theorem}[weighted transfer and first defect]\label{thm:C}
+For every odd prime $p$,
+\[
+D_p(z)=
+-\sum_{k=(p+1)/2}^{p-1}a_k64^{-k}
+\sum_{j=p-k}^{k}(-1)^j\binom{k}{j}z^{k+j},
+\]
+hence $D_p\in p^2\Zp[z]$. Moreover, with $b=\fl{(3p-1)/4}$,
+\begin{equation}\label{eq:defect}
+\begin{gathered}
+D_p(z)\equiv p^2z^pR_p(z)\pmod{p^3},\\
+R_p(z)=-\sum_{k=(p+1)/2}^{b}\frac{a_k}{p^2}\,64^{-k}
+\sum_{j=p-k}^{k}(-1)^j\binom{k}{j}z^{k+j-p},
+\end{gathered}
+\end{equation}
+and, viewing the reductions $\bar R_p,\bar R_p'\in\Fp[z]$,
+\begin{equation}\label{eq:refl}
+\bar R_p(1-z)=-\bar R_p(z),\qquad \bar R_p'(1-z)=\bar R_p'(z)
+\qquad\text{in }\Fp[z].
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+By Theorem~\ref{thm:A}, the coefficients of degree $<p$ of $H-K\circ w$
+vanish, so $D_p$ receives contributions only from terms of $K\circ w$
+with $k>(p-1)/2$; expanding $(4z)^k(1-z)^k$ and discarding degrees
+$<p$ gives the displayed formula (note $j+k\ge p$ is automatic there).
+The integrality $D_p\in p^2\Zp[z]$ is immediate from
+Lemma~\ref{lem:val}, including $p=3$. Reducing \eqref{eq:defect}: terms
+with $v_p(a_k)\ge3$ (i.e. $k>b$) are $0$ modulo $p^3$, and the top
+surviving exponent is $2b-p<p$, so $R_p$ has degree $2\fl{(p-3)/4}+1<p$.
+
+For the reflection \eqref{eq:refl} we use the following elementary
+projection lemma, applied repeatedly: a polynomial $T\in\Fp[z]$ of
+degree $<2p$ decomposes \emph{uniquely} as
+\begin{equation}\label{eq:proj}
+T(z)=L(z)+z^pV(z),\qquad \deg L<p,\ \deg V<p,
+\end{equation}
+simply by splitting its monomials according to whether the exponent is
+$<p$ or $\ge p$; if moreover $T(1-z)=T(z)$, then comparing the
+coefficients of degree $\ge p$ in $T(1-z)=T(z)$ and using
+$(1-z)^p=1-z^p$ in $\Fp[z]$ gives $V(1-z)=-V(z)$, so that
+$T(1-z)-T(z)=-2z^pV(z)$ in $\Fp[z]$.
+
+Apply this to the reduction $\bar D_p\in\Fp[z]$ of $D_p/p^2$, which has
+degree $\le 2b-p+2(p-1)<2p$ by the degree bound above. Since
+$w(1-z)=w(z)$, the polynomial $K_p\circ w$ is invariant under
+$z\mapsto1-z$; in $\Fp[z]$ each term $z^k(1-z)^k$ of
+$\bar D_p$ (coming from \eqref{eq:defect} modulo $p$, i.e. from
+$z^k(1-z)^k$ expanded at degrees $\ge p$) is itself invariant, hence so
+is $\bar D_p$; and $H_p$ is invariant only in the combination
+$H_p(z)-H_p(1-z)$, so writing $\bar D_p=L+z^pV$ as in \eqref{eq:proj}
+the invariance of each tail chunk $[z^k(1-z)^k]_{\ge p}=z^pV_k(z)$
+gives $V_k(1-z)=-V_k(z)$ for every $k$, hence $V(1-z)=-V(z)$. But by
+\eqref{eq:defect} the reduction of $V$ modulo $p$ is exactly
+$\bar R_p$, the reduction of $R_p$. Therefore
+$\bar R_p(1-z)=-\bar R_p(z)$ in $\Fp[z]$, which is the first identity
+of \eqref{eq:refl}. Differentiating it gives the second. (Note that
+\eqref{eq:refl} is genuinely a statement over $\Fp$: the first defect
+$R_p$ enters $D_p$ only through the $p^2$-multiple in
+\eqref{eq:defect}, so only its reduction modulo $p$ is defined
+intrinsically.)
+\end{proof}
+
+\begin{corollary}[reflection-difference form]\label{cor:refldiff}
+In $\Zp[z]$,
+\begin{equation}\label{eq:refldiff}
+H_p(z)-H_p(1-z)\equiv p^2R_p(z)\pmod{p^3}.
+\end{equation}
+\end{corollary}
+
+\begin{proof}
+Since $w(1-z)=w(z)$ we have
+$H_p(z)-H_p(1-z)=D_p(z)-D_p(1-z)$ exactly. By \eqref{eq:defect},
+\[
+D_p(z)-D_p(1-z)\equiv
+p^2\bigl(z^pR_p(z)-(1-z)^pR_p(1-z)\bigr)\pmod{p^3}.
+\]
+Reducing the right-hand factor modulo $p$ and using
+$(1-z)^p\equiv1-z^p$ together with $R_p(1-z)\equiv-R_p(z)\pmod p$
+from \eqref{eq:refl} gives
+$z^pR_p(z)-(1-z)^pR_p(1-z)\equiv R_p(z)\pmod p$, and since the
+congruence is $p^2$ times a quantity computed modulo $p$, this yields
+\eqref{eq:refldiff}.
+\end{proof}
+
+\begin{corollary}[pairing]\label{cor:pair}
+Let $\mathcal W_p(z)=zH_p'(z)=\sum_{n<p}nh_nz^n$. Then in $\Zp[z]$,
+\begin{equation}\label{eq:pairing}
+(1-z)\mathcal W_p(z)+z\mathcal W_p(1-z)
+\equiv p^2z(1-z)R_p'(z)\pmod{p^3},
+\end{equation}
+and whenever $z,1-z$ are $p$-units,
+\begin{equation}\label{eq:onesided}
+\mathcal W_p(z)\equiv\frac{1-2z}{1-z}\,(\theta_wK_p)\bigl(w(z)\bigr)
+\pmod{p^2},
+\qquad \theta_w=w\frac{\dd}{\dd w}.
+\end{equation}
+\end{corollary}
+
+\begin{proof}
+Differentiating the congruence \eqref{eq:refldiff} of
+Corollary~\ref{cor:refldiff} (differentiation is a well-defined
+operation on coefficientwise congruences of polynomials) gives
+$\mathcal W_p(z)/z+\mathcal W_p(1-z)/(1-z)\equiv p^2R_p'(z)\pmod{p^3}$;
+multiplying by $z(1-z)$ yields \eqref{eq:pairing}. For
+\eqref{eq:onesided}, differentiating $H_p\equiv K_p\circ w\pmod{p^2}$
+and using $\theta_z w=4z(1-2z)$, $w/z=4(1-z)$ gives
+$\mathcal W_p(z)\equiv\frac{1-2z}{1-z}(\theta_wK_p)(w(z))\pmod{p^2}$.
+\end{proof}
+
+\begin{remark}[sharpness]\label{rem:sharp}
+The mod $p^2$ pairings of the table below do not lift to $\equiv0$
+modulo $p^3$ in general: at $p=5$ one computes $R_5=z+2$, so
+$R_5'\equiv1$, and the three denominator-cleared pairings
+$\mathcal W_5(72)+8\mathcal W_5(576)$,
+$\mathcal W_5(48)-4\mathcal W_5(-192)$,
+$\mathcal W_5(63)-64\mathcal W_5(-4032)$ are congruent to
+$50,75,75\pmod{125}$ respectively (direct evaluation), matching
+Remark~\ref{rem:pairdefect}; all are nonzero. (Exact values in
+Appendix~\ref{app:A}.)
+\end{remark}
+
+The three point pairs of Sun's conjecture arise as follows. Writing
+\[
+\mathcal W_p(M):=\sum_{n<p}n\binom{2n}{n}G_n\big/M^n=\mathcal W_p(64/M),
+\]
+and recalling $U_p(d)=\sum_{k<p}ka_k/d^k$ from \eqref{eq:TU}, one has
+$w(z)/256=1/d$ and the Euler factors
+$\frac{1-2z}{1-z}\in\{-7,\,5,\,65\}$:
+
+\begin{center}
+\footnotesize
+\begin{tabular}{ccccc}
+\toprule
+$(M,64/(1-z))$ & $(z,1-z)$ & $d=256/w$ & Euler
+& pairing (mod $p^2$)\\
+\midrule
+$(72,576)$ & $(\frac89,\frac19)$ & $648$ & $-7$ &
+$\mathcal W_p(72)+8\mathcal W_p(576)\equiv0$\\
+$(48,-192)$ & $(\frac43,-\frac13)$ & $-144$ & $5$ &
+$\mathcal W_p(48)-4\mathcal W_p(-192)\equiv0$\\
+$(63,-4032)$ & $(\frac{64}{63},-\frac1{63})$ & $-3969$ & $65$ &
+$\mathcal W_p(63)-64\mathcal W_p(-4032)\equiv0$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The first two pairings hold for $p>3$; the third requires also $p\ne7$
+(both because $63$ must be a $p$-unit and because $1-z=-1/63$ appears).
+In each case $1-z$ is a $p$-unit in the stated range, so
+\eqref{eq:onesided} gives
+\begin{equation}\label{eq:eulertrans}
+\begin{gathered}
+\mathcal W_p(72)\equiv-7U_p(648),\qquad
+\mathcal W_p(48)\equiv5U_p(-144),\\
+\mathcal W_p(63)\equiv65U_p(-3969)\pmod{p^2}.
+\end{gathered}
+\end{equation}
+
+\begin{remark}[mod $p^3$ refinement of the pairings]\label{rem:pairdefect}
+Clearing denominators in \eqref{eq:pairing} at the three points gives
+the exact first defects of the paired sums:
+\begin{align*}
+\mathcal W_p(72)+8\mathcal W_p(576)
+&\equiv \frac{8p^2}{9}\,R_p'\Bigl(\frac89\Bigr),\\
+\mathcal W_p(48)-4\mathcal W_p(-192)
+&\equiv \frac{4p^2}{3}\,R_p'\Bigl(\frac43\Bigr),\\
+\mathcal W_p(63)-64\mathcal W_p(-4032)
+&\equiv \frac{64p^2}{63}\,R_p'\Bigl(\frac{64}{63}\Bigr)
+\end{align*}
+modulo $p^3$ (in the ranges of the table, all displayed denominators
+being $p$-units). At $p=5$, where $R_5=z+2$, the three right-hand
+sides evaluate to $50,75,75\pmod{125}$ (cf.\ Remark~\ref{rem:sharp});
+in particular the mod $p^2$ pairings are sharp.
+\end{remark}
+
+\section{Structure of the defect polynomial}\label{sec:5}
+
+This section is not needed for the proof of the conjecture, but it
+explains \emph{why} the first defect is manageable: $R_p$ satisfies a
+constant-coefficient forcing equation and is carried by a kernel of
+about half its apparent degree. Let $\varepsilon=\leg{-1}{p}$ and let
+$\mathcal S$ be the operator \eqref{eq:S}.
+
+\begin{theorem}\label{thm:D}
+Let $p$ be an odd prime and $q=\fl{(p-3)/4}$.
+\begin{enumerate}[label=\textup{(\roman*)},leftmargin=2.2em]
+\item Forcing equation:
+$\mathcal SR_p=\varepsilon/4$ in $\Fp[z]$.
+\item Kernel: $R_p(z)=t\,J_p(w)$ with $t=1-2z$, $w=4z(1-z)$, where
+\begin{equation}\label{eq:kernel}
+J_p(w)=-\frac{\varepsilon}{2}\sum_{j=0}^{q}
+\frac{(\frac12)_j(\frac34)_j(\frac54)_j}{(\frac32)_j^3}
+\sum_{h=0}^{j}\frac{(-j)_h}{(\frac12-j)_h}w^h ,
+\end{equation}
+all denominators being $p$-units.
+\item Integral invariant: with $a=\fl{p/4}$, $F=P_a(1-2z)$ the Legendre
+polynomial part and $\lambda=a(a+1)$, the expression
+\[
+I_F[Y]=2s^2(F')^2Y-2s^2FF'Y'+s^2F^2Y''+stF^2Y'+2\lambda sF^2Y
+\]
+satisfies $I_F[Y]'=F^2\mathcal SY$ identically, and
+\[
+I_F[R_p]=\frac{\varepsilon}{4}\Bigl(\int_0^zF(u)^2\dd u-\frac{z^p}{2a+1}\Bigr)
+\qquad\text{in }\Fp[z].
+\]
+The term $z^p/(2a+1)$ is forced by the fact that in characteristic $p$
+the kernel of $\dd/\dd z$ on polynomials of degree $\le p$ is spanned by
+$1$ and $z^p$; it is pinned down by $I_F[R_p](0)=I_F[R_p](1)=0$ and the
+Legendre square integral $\int_0^1F^2=1/(2a+1)$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(i) Applying $\mathcal S$ to the truncations gives the exact boundary
+computations
+\[
+\mathcal SH_p=-p^3h_pz^{p-1}+\frac{p(4p^2-1)}{4}h_{p-1}z^p,
+\qquad
+\mathcal MK_p=-p^3c_pw^{p-1},
+\]
+and the pullback \eqref{eq:pullback} holds for the truncations up to the
+same boundary terms. Since $v_p(h_p),v_p(c_p)\ge1$, reducing
+$\mathcal S(H_p-K_p\circ w)\equiv p^2\mathcal S(z^pR_p)\pmod{p^3}$
+gives $\mathcal S(z^pR_p)=-(h_{p-1}/p)z^p/4$ in $\Fp[z]$. In
+characteristic $p$ one has $\mathcal S(z^pY)=z^p\mathcal SY$ (every term
+of $\mathcal S$ except the zeroth-order one contains a derivative), so
+cancelling $z^p$ leaves $\mathcal SR_p=-(h_{p-1}/p)/4$. Finally
+$h_{p-1}/p\equiv-\varepsilon\pmod p$: in the defining convolution for
+$G_{p-1}$, every off-central summand contains a factor $p$ in at least
+one of its central binomial coefficients.  The sole surviving term has
+$k=m=(p-1)/2$; using
+$\binom{p-1}{m}\equiv(-1)^m$ and $4^m\equiv(-1)^m$ shows that it equals
+$(-1)^m=\varepsilon$ modulo $p$.  Thus
+$G_{p-1}\equiv\varepsilon\pmod p$, and
+$\binom{2p-2}{p-1}/p\equiv-1$ together with $64^{p-1}\equiv1$ yields
+the sign.
+
+ (ii) The reflection in \eqref{eq:refl} and $t^2=1-w$ first give a
+unique factorization $R_p=tJ_p(w)$ with $\deg J_p\le q$.  To identify
+$J_p$, put $m=(p-1)/2$, write $k=m+1+j$ and $r=p-1-k=m-1-j$, and set
+\[
+ V_{p,k}(z)=z^{-p}[z^k(1-z)^k]_{\ge p}.
+\]
+The coefficient of $z^{p-1}$ in the complementary low part is
+$(-1)^r\binom kr\equiv\binom{2r}{r}=:B_r$.  Since the complete
+polynomial $P=z^k(1-z)^k$ satisfies $sP'-ktP=0$, separating its low and
+high parts gives the exact equation
+\[
+ sV_{p,k}'-ktV_{p,k}=-(2k+1)B_r.                 \tag{5.3}
+\]
+Writing $V_{p,k}=tQ_j(w)$ and using $k\equiv j+\frac12\pmod p$ turns
+this into
+\[
+ w(1-w)Q_j'+(jw-j-\tfrac12)Q_j=-(2j+2)B_r.
+\]
+Its coefficient recursion, beginning with
+$Q_j(0)=(2k+1)B_r/k$, has the polynomial solution
+\[
+ Q_j(w)=\frac{2k+1}{k}B_r
+ \sum_{h=0}^j\frac{(-j)_h}{(\frac12-j)_h}w^h .  \tag{5.4}
+\]
+All denominators here are $p$-units.  The scalar of this tail in
+\eqref{eq:defect} is
+$u_j=(a_{m+1+j}/p^2)64^{-(m+1+j)}$.  Wilson's theorem gives
+$u_0=1$ and
+\[
+ \frac{u_j}{u_{j-1}}=
+ \frac{2j(16j^2-1)}{(2j+1)^3},\qquad
+ \frac{((2k+1)/k)B_r}{((2k-1)/(k-1))B_{r+1}}
+ =\frac{2j-1}{8j}.
+\]
+Their product is
+$\frac{(j-1/2)(j-1/4)(j+1/4)}{(j+1/2)^3}$; the initial value is
+$\varepsilon/2$.  Substitution in the defining tail for $R_p$ proves
+\eqref{eq:kernel}.  Its top coefficient is nonzero, so
+$\deg J_p=q$ and $\deg R_p=2q+1$.
+
+(iii) The identity $I_F[Y]'=F^2\mathcal SY$ is a formal consequence of
+$\mathcal DF=0$ via the product rules. Integrating (i) termwise
+(legitimate since $2a+1<p$, so no denominator $p$ occurs) gives
+\[
+I_F[R_p]=\frac{\varepsilon}{4}\int_0^zF(u)^2\dd u+C_0+C_1z^p
+\qquad\text{in }\Fp[z],
+\]
+where the integration ambiguity is $C_0+C_1z^p$ because in
+characteristic $p$ the kernel of $\dd/\dd z$ on polynomials of degree
+$\le p$ is spanned by $1$ and $z^p$. To pin down the constants we use
+the reflections: $F(1-z)=(-1)^aF(z)$, and each of the five terms of
+$I_F[Y]$ is built from an even number of $F$'s or $F'$'s together with
+the reflection-odd $R_p$ (and $s=z(1-z)$ invariant, $t=1-2z$ odd), so
+$I_F[R_p](1-z)=-I_F[R_p](z)$. Evaluation at $z=0$ gives
+$I_F[R_p](0)=0$ (every term contains $s$ or $R_p(0)=0$), hence
+$C_0=0$; evaluation at $z=1$ then gives
+$0=I_F[R_p](1)=\frac{\varepsilon}{4}\int_0^1F^2+C_1$, and the
+classical Legendre square integral (Rodrigues formula and integration
+by parts, valid in $\Fp$ since $2a+1<p$)
+$\int_0^1F(u)^2\dd u=1/(2a+1)$ yields $C_1=-\varepsilon/(4(2a+1))$.
+\end{proof}
+
+\begin{remark}
+The forcing equation (i) with the reflection \eqref{eq:refl}
+characterizes $R_p$ uniquely among polynomials of degree $<p$: the
+homogeneous solution of $\mathcal SY=0$ regular at $0$ is $F^2$, which
+is reflection-\emph{even}, while the recurrence for the coefficients is
+determined by the constant term. Formula \eqref{eq:kernel} and the
+invariant (iii) are two cross-checkable presentations of the same
+defect.
+\end{remark}
+
+\section{Special values: the three weighted pairs}\label{sec:6}
+
+We now combine \eqref{eq:eulertrans} with published special values of
+the triple binomial sums \eqref{eq:TU}. The small primes excluded by the
+printed hypotheses are settled by direct exact computation
+(Appendix~\ref{app:A}).
+
+\subsection{The pair \texorpdfstring{$(72,576)$}{(72,576)}}
+
+\begin{theorem}\label{thm:grpA}
+For every prime $p>3$,
+\[
+\mathcal W_p(72)\equiv-8\mathcal W_p(576)\equiv
+\begin{cases}
+4x^2-3p,&p=x^2+4y^2\equiv1\pod4,\\
+p,&p\equiv3\pod4,
+\end{cases}
+\pmod{p^2}.
+\]
+\end{theorem}
+
+\begin{proof}
+The pairing is Corollary~\ref{cor:pair}. For $p\ne7$, Sun
+\cite[Theorem~2.10]{SunBQF} gives (the printed hypotheses exclude
+$p=2,3,7$)
+\[
+U_p(648)\equiv
+\begin{cases}
+(3p-4x^2)/7\pmod{p^2},&p=x^2+4y^2\equiv1\pmod4,\\
+-p/7\pmod{p^2},&p\equiv3\pmod4,
+\end{cases}
+\]
+and \eqref{eq:eulertrans} with factor $-7$ yields the values. For
+$p=7$: direct evaluation from \eqref{eq:Gdef} gives
+$\mathcal W_7(72)\equiv7\pmod{49}$ and
+$\mathcal W_7(72)+8\mathcal W_7(576)\equiv0\pmod{49}$
+(Appendix~\ref{app:A}), which is the $p\equiv3\pmod4$ branch.
+\end{proof}
+
+\subsection{The pair \texorpdfstring{$(48,-192)$}{(48,-192)}}
+
+\begin{theorem}\label{thm:grpB}
+For every prime $p>3$,
+\[
+\mathcal W_p(48)\equiv4\mathcal W_p(-192)\equiv
+\begin{cases}
+3p-4x^2,&p=x^2+3y^2\equiv1\pod3,\\
+-p,&p\equiv2\pod3,
+\end{cases}
+\pmod{p^2}.
+\]
+\end{theorem}
+
+\begin{proof}
+For $p>5$, Sun \cite[Theorem~2.9]{SunBQF} gives $U_p(-144)$ modulo
+$p^2$ with values $(3p-4x^2)/5$ and $-p/5$ in the split and inert cases;
+multiplication by $5$ via \eqref{eq:eulertrans} gives the claim.
+The printed range of that theorem is $p>3$, but the formula containing
+$1/5$ does not hold at $p=5$ as stated: $U_5(-144)\equiv19\pmod{25}$
+while $-p/5\equiv-1\equiv24\pmod{25}$. We therefore quote it for $p>5$
+only and settle $p=5$ directly: $\mathcal W_5(48)\equiv20\equiv-5
+\pmod{25}$ and $\mathcal W_5(48)-4\mathcal W_5(-192)\equiv0\pmod{25}$
+(Appendix~\ref{app:A}), the inert branch.
+\end{proof}
+
+\subsection{The pair \texorpdfstring{$(63,-4032)$}{(63,-4032)}: a CM Ramanujan sum}
+
+By \eqref{eq:eulertrans}, the third pair reduces to $65U_p(-3969)$.
+The required input is the following explicit specialization of the
+general CM theorem of Chisholm--Deines--Long--Nebe--Swisher
+\cite[Theorem~1]{CDLNS} (restated with both reduction types in
+\cite[Theorem~2.1]{BRSTT}).
+
+\begin{proposition}\label{prop:ram65}
+For every prime $p>3$, $p\ne7$,
+\begin{equation}\label{eq:ram65}
+\sum_{k=0}^{p-1}(65k+8)\frac{a_k}{(-3969)^k}
+\equiv8\leg{-7}{p}p\pmod{p^2}.
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+\emph{Parameters.} Since
+$\frac{(1/2)_k(1/4)_k(3/4)_k}{(k!)^3}=\frac{a_k}{256^k}$, the sum
+\eqref{eq:ram65} is $8$ times the normalized truncated sum with
+\[
+d=4,\qquad \lambda=-\frac{256}{3969},\qquad \alpha=\frac{65}{8},
+\qquad \delta=\frac{9\sqrt7}{8};
+\]
+the identity $\sum_{k\ge0}(65k+8)a_k/(-3969)^k=9\sqrt7/\pi$
+\cite[Table~2]{Guillera} certifies that these are the parameters of a
+Ramanujan-type formula in the sense required by the cited theorem. (An
+independent normalization check: Clausen--Pfaff gives
+$K(-4x/(1-x)^2)=\sqrt{1-x}\,F(x)$ between the ${}_3F_2$ with parameters
+$(\frac14,\frac12,\frac34)$ and $(\frac12,\frac12,\frac12)$, and at
+$x=1/64$ differentiation gives
+$(65\theta_w+8)K=\frac{9\sqrt7}{16}(42\theta_x+5)F$; the classical
+value $(42k+5)$-series $=16/\pi$ \cite[(1.1)]{OZ} gives the same
+$\delta$.)
+
+\emph{Hypotheses.} $1-\lambda=(65/63)^2$, so $\Q(\sqrt{1-\lambda})=\Q$
+(totally real, unramified conditions automatic) and $|\lambda|<1$.
+With $t=(1-\sqrt{1-\lambda})/2=-1/63$, the curve of the theorem is
+\[
+E:\ y^2=x\Bigl(x^2+x-\tfrac1{252}\Bigr),\qquad
+\Delta(E)=\frac{2^6}{3^6 7^3},\qquad j(E)=255^3=16581375.
+\]
+The $j$-invariant is the singular modulus of the CM order of
+discriminant $-28$ (the class polynomial is $H_{-28}(X)=X-16581375$;
+compare \cite{LMFDB}), so $E$ has CM by $\Q(\sqrt{-7})$; for $p>3$,
+$p\ne7$ the displayed model has $p$-integral coefficients and unit
+discriminant, hence good reduction. By Deuring's criterion the ordinary
+(resp. supersingular) primes are the split (resp. inert) primes of
+$\Q(\sqrt{-7})$, so the sign in the theorem is
+$\operatorname{sgn}(E,p)=\leg{-7}{p}$. For $p\notin\{2,3,5,7,13\}$ both
+$\alpha$ and $\lambda$ are $p$-units and $\leg{1-\lambda}{p}=1$, so
+\cite[Theorem~1]{CDLNS} applies verbatim and multiplication by $8$
+gives \eqref{eq:ram65} --- including the inert classes
+$p\equiv3,5,6\pmod7$, for which the theorem assigns $-p$ in the
+normalized sum (we do not use any ordinary-prime-only variant).
+
+\emph{The two exceptional primes.} At $p=5,13$ the parameter
+$\alpha=65/8$ is not a $p$-unit and $p^2\mid1-\lambda$, so the theorem
+cannot be invoked. Direct exact evaluation of the cleared-denominator
+sum (no division by $65$ is ever performed) gives
+\[
+\begin{array}{c|c|c}
+p & \bigl((65k+8)a_k(-3969)^{-k}\bmod p^2\bigr)_{0\le k<p} & \text{sum}\\
+\hline
+5 & 8,\,17,\,10,\,0,\,0 & 10\equiv-40\pmod{25}\\
+13 & 8,\,160,\,142,\,80,\,52,\,65,\,65,\,0,\dots,0 & 65\equiv-104\pmod{169}
+\end{array}
+\]
+Both primes are inert in $\Q(\sqrt{-7})$, and the sums equal
+$-8p$ modulo $p^2$, as required. (Terms with $k>(p-1)/2$ vanish modulo
+$p^2$ by Lemma~\ref{lem:val}.)
+\end{proof}
+
+\begin{remark}[a period-product form]\label{rem:period}
+Proposition~\ref{prop:fclausen} allows formal differentiation modulo
+$p^2$: at $t_0=-1/63$ the chain rule reads $65\theta_w=64\theta_t$,
+and with $B_p$ as in Section~\ref{sec:2},
+\[
+\sum_{k<p}(65k+8)\frac{a_k}{(-3969)^k}
+\equiv8B_p(t_0)\bigl(B_p(t_0)+16\,\theta_tB_p(t_0)\bigr)\pmod{p^2}
+\]
+for $p\nmid2\cdot3\cdot5\cdot7\cdot13$; the two factors are the finite
+period and its Gauss--Manin derivative of $E$. This gives a concrete
+geometric reading of \eqref{eq:ram65}; it is not used in the proof.
+\end{remark}
+
+\begin{theorem}\label{thm:grpC}
+For every prime $p>3$, $p\ne7$,
+\[
+\mathcal W_p(63)\equiv64\mathcal W_p(-4032)\pmod{p^2},
+\]
+with common value
+\[
+\begin{cases}
+-8(4x^2-3p),&p=x^2+7y^2\equiv1,2,4\pod7,\\
+-8p,&p\equiv3,5,6\pod7.
+\end{cases}
+\]
+\end{theorem}
+
+\begin{proof}
+Write $T_p=T_p(-3969)$, $U_p=U_p(-3969)$.
+Proposition~\ref{prop:ram65} reads $65U_p+8T_p\equiv8\leg{-7}{p}p$.
+For split $p$ ($p=x^2+7y^2\equiv1,2,4\pmod7$), Sun--Ye
+\cite[Theorem~1.8]{SunYe} give $T_p\equiv4x^2-2p\pmod{p^2}$ (in fact
+modulo $p^3$); for inert $p$ ($p\equiv3,5,6\pmod7$, $p\ne7$), Sun
+\cite[Theorem~5.1]{SunL2} gives $T_p\equiv0\pmod{p^2}$. Hence
+\[
+65U_p\equiv8\leg{-7}{p}p-8T_p\equiv
+\begin{cases}
+8p-8(4x^2-2p)=-8(4x^2-3p),&\text{split},\\
+-8p,&\text{inert},
+\end{cases}
+\]
+and \eqref{eq:eulertrans} identifies the left side with
+$\mathcal W_p(63)\equiv64\mathcal W_p(-4032)\pmod{p^2}$.
+\end{proof}
+
+\section{The denominator 128 modulo \texorpdfstring{$p^3$}{p-cubed}}\label{sec:7}
+
+\begin{theorem}[split branch]\label{thm:128split}
+For $p=x^2+2y^2\equiv1,3\pmod8$,
+\[
+\sum_{n=0}^{p-1}\frac{\binom{2n}{n}G_n}{128^n}
+\equiv4x^2-2p-\frac{p^2}{4x^2}\pmod{p^3}.
+\]
+\end{theorem}
+
+\begin{proof}
+Theorem~\ref{thm:B} reduces the left side to
+$T_p=\sum_{k<p}a_k/256^k$ modulo $p^3$, and Sun--Ye
+\cite[Theorem~1.5]{SunYe} evaluate exactly this sum:
+$T_p\equiv4x^2-2p-p^2/(4x^2)\pmod{p^3}$ for all
+$p=x^2+2y^2\equiv1,3\pmod8$ (no excluded primes). Note $p=3=1^2+2\cdot1^2$
+is covered; the central binomial $\binom{2n}{n}G_n/128^n$ is
+$p$-integral throughout.
+\end{proof}
+
+For the inert classes we use the jet comparison proved in
+Appendix~\ref{app:B} and the following exact rational identity, proved
+in Appendix~\ref{app:C}. Let, for $a\ge1$,
+\[
+f_i=(-1)^i\binom ai\binom{a+i}{i},
+\]
+\[
+\mathcal Q_a(z)=\sum_{j=0}^{a-1}\ \sum_{k=0}^{a-1-j}
+f_{k+j+1}\,(-1)^k\frac{(a-k-1)!\,(k!)^2}{(a+k+1)!}\,z^j .
+\]
+
+\begin{theorem}\label{thm:E}
+For every odd $a\ge1$,
+\[
+\mathcal Q_a\Bigl(\tfrac12\Bigr)
+=-\Bigl(\frac{2^{a-1}}{a\binom{a-1}{(a-1)/2}}\Bigr)^2 .
+\]
+\end{theorem}
+
+\begin{proposition}[jet reduction at the center]\label{prop:jet}
+Let $p\ge5$ and $a=\fl{p/4}$. Then
+$H_p(\tfrac12)\equiv A_p(\tfrac12)^2+\frac{3p^2}{16}\mathcal
+Q_a(\tfrac12)\pmod{p^3}$,
+where $A_p$ is the truncation of $B$. If $a$ is odd
+(equivalently $p\equiv5,7\pmod8$), then $A_p(\tfrac12)\in p^2\Zp$, so
+\[
+\sum_{n=0}^{p-1}\frac{\binom{2n}{n}G_n}{128^n}
+\equiv\frac{3p^2}{16}\mathcal Q_a\Bigl(\tfrac12\Bigr)\pmod{p^3}.
+\]
+\end{proposition}
+
+\begin{theorem}[inert branches]\label{thm:128inert}
+Let $p>3$ be prime and $C_p=\binom{\lfloor p/4\rfloor}{\lfloor p/8\rfloor}$.
+Then
+\[
+\sum_{n=0}^{p-1}\frac{\binom{2n}{n}G_n}{128^n}
+\equiv
+\begin{cases}
+\dfrac{p^2}{3}C_p^{-2}\pmod{p^3},&p\equiv5\pmod8,\\[2mm]
+-\dfrac{3p^2}{2}C_p^{-2}\pmod{p^3},&p\equiv7\pmod8.
+\end{cases}
+\]
+\end{theorem}
+
+\begin{proof}
+Write $p=8k+5$ or $8k+7$; then $a=\fl{p/4}=2k+1$, $\fl{p/8}=k$, and
+$C_p=\binom{a}{k}$, a $p$-unit. Theorem~\ref{thm:E} gives
+$\mathcal Q_a(\frac12)=-16^k/((k+1)^2\binom{a}{k}^2)$.
+If $p=8k+5$: $16^k=2^{(p-5)/2}=2^{(p-1)/2}/4\equiv\leg2p/4=-\frac14$
+and $k+1\equiv\frac38\pmod p$; if $p=8k+7$: $16^k\equiv\frac18$ and
+$k+1\equiv\frac18$. Substituting into Proposition~\ref{prop:jet}:
+\[
+\frac{3}{16}\mathcal Q_a\Bigl(\tfrac12\Bigr)\equiv
+\begin{cases}
+\frac{3}{16}\cdot\frac{1/4}{(3/8)^2}C_p^{-2}=\frac13C_p^{-2},&p\equiv5\pmod8,\\[1mm]
+\frac{3}{16}\cdot\frac{-1/8}{(1/8)^2}C_p^{-2}=-\frac32C_p^{-2},&p\equiv7\pmod8,
+\end{cases}
+\]
+and multiplication by $p^2$ gives the claim.
+\end{proof}
+
+\section{Conclusion and remarks}\label{sec:8}
+
+\begin{theorem}\label{thm:final}
+Conjecture~2.4 of \cite{Sun24} holds: the three weighted pairs are
+Theorems~\ref{thm:grpA}, \ref{thm:grpB}, \ref{thm:grpC}, and the
+denominator-$128$ congruences are Theorems~\ref{thm:128split} and
+\ref{thm:128inert}.
+\end{theorem}
+
+\begin{remark}[higher precision at the center]
+Theorem~\ref{thm:Bp} shows that the center bridge lifts to $p^4$
+exactly at the primes where the finite sum \eqref{eq:Delta} vanishes
+modulo $p$; the values $1,1,2,1,5,12$ at $p=3,5,7,11,13,17$ show this
+is not automatic. We have no criterion for the vanishing in general.
+\end{remark}
+
+\begin{remark}[no naive finite Pfaff transplant]\label{rem:pfaff}
+One might hope to convert \eqref{eq:ram65} into the classical $42k+5$
+truncated sum via a direct finite transformation. This is impossible
+without a correction term: the known modulo-$p^2$ value
+$\sum_{k<p}(42k+5)\binom{2k}{k}^3/4096^k\equiv5\leg{-1}{p}p$
+(compare \cite[Theorem~1.1]{OZ}) is incompatible with
+\eqref{eq:ram65} under the infinite-series prefactor $9\sqrt7/16$
+unless $p\mid47^2$. Any finite analogue of the Clausen--Pfaff
+transformation between these two truncations must therefore contain a
+first-order tail correction; we have not constructed one.
+\end{remark}
+
+\begin{remark}[scope]
+The same two-level transfer applies in principle to other CM points of
+the family, provided the corresponding special values of the triple
+binomial sums are known; the defect analysis of Section~\ref{sec:5} is
+point-free. We have not pursued further instances.
+\end{remark}
+
+\appendix
+
+\section{Exceptional primes: exact certificates}\label{app:A}
+
+All computations below are exact integer/rational evaluations of the
+defining sums \eqref{eq:Gdef}, \eqref{eq:TU}; they are finite
+certificates covering exactly the primes excluded by the quoted
+theorems, not samples suggesting a general pattern.
+
+\medskip
+\noindent\textbf{Group $(72,576)$ at $p=7$.}
+$\mathcal W_7(72)\equiv7\pmod{49}$ and
+$\mathcal W_7(576)\equiv0\pmod{49}$; in particular the pairing and the
+value $p$ hold.
+
+\noindent\textbf{Group $(48,-192)$ at $p=5$.}
+$\mathcal W_5(48)\equiv20\equiv-5\pmod{25}$ and
+$\mathcal W_5(-192)\equiv0\pmod{25}$; the pairing and the value $-p$
+hold. For comparison, the printed $p>3$ formula of
+\cite[Theorem~2.9]{SunBQF} would give $U_5(-144)\equiv-1\pmod{25}$,
+while the exact value is $19$; the corrected combination
+$5U_5(-144)+T_5(-144)$ is still $\equiv-5\pmod{25}$.
+
+\noindent\textbf{Proposition~\ref{prop:ram65} at $p=5,13$.} The full
+residue tables are displayed in the proof of
+Proposition~\ref{prop:ram65}; the sums are $10\equiv-40\pmod{25}$ and
+$65\equiv-104\pmod{169}$, matching $8\leg{-7}{p}p$ since both primes
+are inert in $\Q(\sqrt{-7})$.
+
+\noindent\textbf{Center at $p=3$.}
+$\sum_{n<3}\binom{2n}{n}G_n/128^n\equiv\sum_{k<3}a_k/256^k\equiv16
+\pmod{27}$; the exact difference is $945/8192=3^3\cdot35/8192$ with
+$\Delta_3=35/8192\equiv1\pmod3$, matching \eqref{eq:Delta}.
+
+\noindent\textbf{Pairing defects at $p=5$} (cf. Remark~\ref{rem:sharp}):
+\begin{align*}
+\mathcal W_5(72)+8\mathcal W_5(576)&\equiv50,\\
+\mathcal W_5(48)-4\mathcal W_5(-192)&\equiv75,\\
+\mathcal W_5(63)-64\mathcal W_5(-4032)&\equiv75
+\end{align*}
+modulo $125$.
+
+\section{The parametric jet and the corrected reflection}\label{app:B}
+
+This appendix proves Proposition~\ref{prop:jet}. Fix $p\ge5$,
+$a=\fl{p/4}$, $b=p-a-1$. Let $B_n=\binom{2n}{n}\binom{4n}{2n}$,
+$A_p(z)=\sum_{n<p}B_nz^n/64^n$, and define the finite Pochhammer
+polynomial
+\[
+J_p(\nu,z)=\sum_{n=0}^{p-1}\frac{(-\nu)_n(\nu+1)_n}{(n!)^2}z^n
+\in\Q(\nu)[z],
+\]
+whose Taylor coefficients at $\nu=a$ are $p$-integral since each $n!$ is
+a $p$-unit. Write
+$J_p(a+s,z)=F(z)+sU(z)+s^2V(z)+O(s^3)$.
+
+\begin{lemma}\label{lem:B1}
+$F(z)=P_a(1-2z)$ has degree $a$, and
+$A_p\equiv F-\frac p4U+\frac{p^2}{16}V\pmod{p^3}$ in $\Zp[z]$.
+\end{lemma}
+
+\begin{proof}
+At $\nu=a$,
+\[
+ \frac{(-\nu)_n(\nu+1)_n}{(n!)^2}
+ =(-1)^n\frac{(a+n)!}{(a-n)!(n!)^2}qquad(0\le n\le a),
+\]
+which is the coefficient of $P_a(1-2z)$; for $n>a$ the factor
+$(-\nu)_n$ vanishes.  Thus $F=P_a(1-2z)$ exactly.  Now
+\[
+ a-\frac p4=
+ \begin{cases}-\frac14,&p\equiv1\pmod4,\\
+ -\frac34,&p\equiv3\pmod4,
+ \end{cases}
+\]
+and in the two cases the upper parameters
+$(-(a-p/4),a-p/4+1)$ are respectively
+$(\frac14,\frac34)$ and $(\frac34,\frac14)$.  Consequently
+\[
+ A_p(z)=J_p(a-p/4,z)
+\]
+coefficientwise, with no analytic continuation involved.  Taylor's
+formula at the integral point $a$ therefore gives
+\[
+ A_p=F-\frac p4U+\frac{p^2}{16}V+p^3Z
+\]
+for some $Z\in\Zp[z]$: every coefficient of $J_p$ is a polynomial in
+$\nu$ over $\Zp$, because $n!$ is a $p$-unit for $n<p$.  This proves
+the asserted congruence and also fixes the signs and the normalization
+of $V$ (the coefficient of $s^2$, not the second derivative itself).
+\end{proof}
+
+\begin{lemma}\label{lem:B2}
+$[z^n]U$ is given, with $f_n=(-1)^n\binom an\binom{a+n}{n}$, by
+\[
+[z^n]U=
+\begin{cases}
+f_n(H_{a+n}-H_{a-n}),&0\le n\le a,\\
+(-1)^{a+1}(n-a-1)!\,(n+a)!/(n!)^2,&a<n<p,
+\end{cases}
+\]
+and $D_p:=U\bmod p$ has degree $b$. With
+$W_p(z)=\sum_{n=b+1}^{p-1}\bigl([z^n]U/p\bigr)z^n\bmod p$, Wilson's
+theorem rewrites it as the short reversed polynomial
+\[
+W_p(z)=\sum_{k=0}^{a-1}w_kz^{p-1-k},
+\qquad
+w_k=(-1)^k\frac{(a-k-1)!(k!)^2}{(a+k+1)!}.
+\]
+\end{lemma}
+
+\begin{proof}
+For $n\le a$, logarithmic differentiation of both Pochhammer factors
+at $\nu=a$ gives
+\[
+ \sum_{r=0}^{n-1}\frac1{a-r}
+ +\sum_{r=1}^{n}\frac1{a+r}=H_{a+n}-H_{a-n},
+\]
+which proves the first line.  For $n>a$, only the factor
+$a-\nu$ in $(-\nu)_n$ vanishes at $a$; differentiating it and
+multiplying the remaining factors gives the second line, including the
+sign $(-1)^{a+1}$.
+
+If $n>b=p-a-1$, the factor $(\nu+1)_n$ contains exactly one multiple of
+$p$ at $\nu=a$, while all its other factors are $p$-units.  Locally the
+two distinguished factors are $(-s)(p+s)$.  If the product of all
+remaining factors is $K(s)\in\Zp[s]$, then
+$[z^n]U=-pK(0)$ and $[z^n]V=-K(0)-pK'(0)$; hence
+$[z^n]V\equiv[z^n]U/p\pmod p$.  In particular these coefficients of
+$U$ are divisible by $p$, so $D_p=U\bmod p$ has degree at most $b$.
+
+Finally put $n=p-1-k$, $0\le k<a$.  Wilson's theorem gives
+\[
+ \begin{aligned}
+ \frac{(n+a)!}{p}&\equiv-(a-k-1)!,&
+ (n-a-1)!&\equiv\frac{(-1)^{a+k}}{(a+k+1)!},\\
+ (n!)^2&\equiv\frac1{(k!)^2}&&\pmod p.
+ \end{aligned}
+\]
+Combining these congruences with the factor $(-1)^{a+1}$ in the high
+coefficient of $U$ yields precisely the coefficient $w_k$ displayed
+above.  This proves the reversed expression for $W_p$.
+\end{proof}
+
+\begin{lemma}[error decomposition]\label{lem:B3}
+With $[\,\cdot\,]_{\ge p}$ denoting truncation to degrees $\ge p$ and
+$E_p=(H_p-A_p^2)/p^2\bmod p$,
+\[
+E_p=\Bigl[\tfrac38FW_p-\tfrac1{16}D_p^2\Bigr]_{\ge p}\pmod p .
+\]
+\end{lemma}
+
+\begin{proof}
+By Theorem~\ref{thm:C} and Proposition~\ref{prop:fclausen},
+$H_p-A_p^2\in p^2\Zp[z]$, so $E_p$ is a well-defined polynomial in
+$\Fp[z]$, supported in degrees $\ge p$ (the coefficients of degree $<p$
+of $H_p-A_p^2$ vanish exactly by Theorem~\ref{thm:A}). Square the
+expansion of Lemma~\ref{lem:B1}: the $-\frac p2FU$ term contributes
+$-[FW]/2$ after truncation (the low part of $U$ does not overflow since
+$\deg F+\deg D=a+b=p-1$), and the $\frac{p^2}{16}(U^2+2FV)$ term
+contributes $[D^2]/16+[FW]/8$ using $[z^n]V\equiv[z^n]U/p$ on the
+overflow range; $E_p$ being the \emph{negative} of the overflow of
+$A_p^2$ gives the displayed coefficients $3/8$ and $-1/16$.
+\end{proof}
+
+\begin{lemma}[reflection of the derivative part]\label{lem:B4}
+$D_p(1-z)=(-1)^aD_p(z)$ in $\Fp[z]$.
+\end{lemma}
+
+\begin{proof}
+With $\mathcal L_a=z(1-z)\partial_z^2+(1-2z)\partial_z+a(a+1)$, the
+coefficient recursion of the finite Pochhammer polynomial, together with
+the $p$-divisibility of the high coefficients of $U$, gives
+$\mathcal L_aD_p=-(2a+1)F$ in $\Fp[z]$; the last coefficient equation
+is consistent since $\deg D_p=b\le p-2$. Among polynomials of degree
+$<p$, $\ker\mathcal L_a$ is spanned by $F$ (the recursion
+$(n+1)^2Y_{n+1}+(a(a+1)-n(n+1))Y_n=0$ determines $Y$ from $Y_0$, all
+$(n+1)^2$ being nonzero). Since $\mathcal L_a$ commutes with
+$\rho:z\mapsto1-z$ and $\rho F=(-1)^aF$ (Rodrigues), the difference
+$\rho D_p-(-1)^aD_p$ is both a multiple of $F$ and anti-invariant under
+$\rho$ up to the sign $(-1)^a$; in odd characteristic this forces it to
+vanish.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:jet}]
+Apply the projection lemma to $D_p^2$: a polynomial
+$T\in\Fp[z]$ of degree $<2p$ with $T(1-z)=T(z)$ writes uniquely as
+$L+z^pC$ with $\deg L,\deg C<p$, and comparing degrees $\ge p$ via
+$(1-z)^p=1-z^p$ gives $C(1-z)=-C(z)$. Combined with Lemma~\ref{lem:B4}
+and the reversed form of $W_p$, the product $[FW_p]_{\ge p}$ is exactly
+$z^p\mathcal Q_a(z)$ with $\mathcal Q_a$ as in Section~\ref{sec:7}
+(the entries of $\mathcal Q_a$ are the convolution of the $f_i$ and
+$w_k$), while $[D_p^2]_{\ge p}$ has antisymmetric $z^p$-part. Hence
+\[
+\widetilde R_p:=E_p z^{-p}-\tfrac38\mathcal Q_a
+\quad\text{satisfies}\quad
+\widetilde R_p(1-z)=-\widetilde R_p(z),
+\]
+and evaluating at $z=\frac12$ (note $(\frac12)^p=\frac12$) gives
+$E_p(\frac12)=\frac3{16}\mathcal Q_a(\frac12)$; since
+$H_p-A_p^2=p^2E_p$ in $\Zp[z]$,
+$H_p(\frac12)\equiv A_p(\frac12)^2+\frac{3p^2}{16}\mathcal
+Q_a(\frac12)\pmod{p^3}$.
+If $a$ is odd, $F(\frac12)=P_a(0)=0$ exactly and
+$D_p(\frac12)=0$ by Lemma~\ref{lem:B4}, so
+$A_p(\frac12)\equiv\frac{p^2}{16}V(\frac12)\pmod{p^3}$ lies in
+$p^2\Zp$ and its square is $0$ modulo $p^3$.
+\end{proof}
+
+\section{Proof of Theorem~\ref{thm:E}: the symmetric-square
+identity}\label{app:C}
+
+Fix $a\ge1$ odd, $\lambda=a(a+1)$, $s=z(1-z)$, $t=1-2z$, and let
+$F=F_a(z)=\sum_{i=0}^a f_iz^i$ with
+$f_i=(-1)^i\binom ai\binom{a+i}{i}$, so $\mathcal DF=0$ for
+$\mathcal D=s\partial_z^2+t\partial_z+\lambda$, and let
+\[
+\mathcal S=s^2\partial^3+3st\,\partial^2
++\bigl(t^2+(4\lambda-2)s\bigr)\partial+2\lambda t
+\]
+be the symmetric-square operator, satisfying \eqref{eq:symmsq} with
+respect to $\mathcal D$.
+
+\emph{Step 1: $\mathcal Q:=\mathcal Q_a$ as a positive part.}
+Set $w_{j-1}=-1/(j^2f_j)$ (consistent with Appendix~\ref{app:B}) and
+\[
+V(z)=\sum_{j=1}^{a}\frac{z^{-j}}{j^2f_j},
+\qquad\text{so}\qquad
+\mathcal Q=-[FV]_+,
+\]
+where $[\,\cdot\,]_+$ takes the nonnegative-degree part. The recursion
+$(j+1)^2f_{j+1}=-(a-j)(a+j+1)f_j$ gives the exact Laurent identity
+\begin{equation}\label{eq:DV}
+\mathcal DV=-z^{-1}+f_a^{-1}z^{-a-1}.
+\end{equation}
+
+\emph{Step 2: forcing term.} Substituting \eqref{eq:DV} into
+\eqref{eq:symmsq} with $f=F$, $v=V$: the term $-z^{-1}$ contributes
+$F-3(1-z)F'$, and the nonnegative part of the $f_a^{-1}z^{-a-1}$
+contribution is the constant $-(2a+1)$ (read off the top coefficients
+of $3sF'$, $tF$, $(a+1)(1-z)F$: $-3a,-2,a+1$). The operator $\mathcal S$
+preserves the purely negative part (its possible top-degree coefficient
+on $z^n$ is $(n+1)(n-2a)(n+2a+2)$, vanishing at $n=-1$ and negative
+beyond), so the positive-part extraction is compatible and
+\begin{equation}\label{eq:SQ}
+\mathcal S\mathcal Q=3(1-z)F'-F+(2a+1).
+\end{equation}
+
+\emph{Step 3: symmetrization.} With $q=(\mathcal Q+\rho\mathcal Q)/2$,
+$\rho Y(z)=Y(1-z)$: for odd $a$, $\rho F=-F$ (Rodrigues) and
+$\mathcal S\rho=-\rho\mathcal S$; taking the symmetric part of
+\eqref{eq:SQ} kills the constant and gives
+\begin{equation}\label{eq:Sq}
+\mathcal Sq=\tfrac32tF'-F .
+\end{equation}
+
+\emph{Step 4: the invariant.} For any polynomial $Y$, the expression
+\[
+J[Y]=2s^2(F')^2Y-2s^2FF'Y'+s^2F^2Y''+stF^2Y'+2\lambda sF^2Y
+\]
+satisfies $J[Y]'=F^2\mathcal SY$ identically (a formal consequence of
+$\mathcal DF=0$: with $F,F',F''$ treated as independent jet variables,
+the difference of the two sides factors exactly as
+$(4sF'Y-2sFY')(sF''+tF'+\lambda F)$). Hence by \eqref{eq:Sq},
+\[
+(2J[q])'=3tF^2F'-2F^3=(tF^3)',
+\]
+so $2J[q]=tF^3+C$; at $z=0$ one has $s=0$, $F=1$, $t=1$, and every term
+of $J[q]$ contains $s$, so $C=-1$:
+\begin{equation}\label{eq:Jq}
+2J[q]=tF^3-1 .
+\end{equation}
+
+\emph{Step 5: evaluation.} At $z=\frac12$: $s=\frac14$, $t=0$, and
+$F(\frac12)=P_a(0)=0$ ($a$ odd), so \eqref{eq:Jq} reduces to
+$4s^2(F')^2q=-1$; since $q(\frac12)=\mathcal Q(\frac12)$,
+\[
+\mathcal Q_a\Bigl(\tfrac12\Bigr)=-\frac{4}{F_a'(1/2)^2}.
+\]
+Finally $F_a'(1/2)=-2P_a'(0)$. The coefficient of $x$ in the Legendre
+polynomial $P_{2m+1}(x)$ is
+\[
+[x]\,P_{2m+1}(x)=(-1)^m(2m+1)\binom{2m}{m}\big/4^m;
+\]
+thus, with $a=2m+1$,
+\[
+\mathcal Q_a\Bigl(\tfrac12\Bigr)
+=-\frac{16^m}{(2m+1)^2\binom{2m}{m}^2}
+=-\Bigl(\frac{2^{a-1}}{a\binom{a-1}{(a-1)/2}}\Bigr)^2 .
+\qed
+\]
+
+\section{Computational checks}\label{app:D}
+
+All symbolic claims in this paper are proved in full generality in the
+text. In addition, the following were verified by exact machine
+computation (Python, standard-library rational arithmetic, from the
+defining convolution \eqref{eq:Gdef}; independent PARI/GP
+reimplementations agree): the coefficients of Theorem~\ref{thm:A} up to
+degree $24$; the identity \eqref{eq:pascal} for $r\le24$; the center
+bridge and the defect formula \eqref{eq:Delta} for the $24$ odd primes
+$p\le97$; the transfer, reflection, forcing equation, kernel and
+integral invariant of Sections~\ref{sec:4}--\ref{sec:5} for
+$3\le p\le31$; the values in Appendix~\ref{app:A}; and all nine
+formulas of the conjecture for the primes $5\le p\le43$ including the
+quadratic-form reconstructions. These checks are diagnostic; no general
+statement in the paper rests on them.
+
+Selected algebraic components of the argument (the operator pullback
+\eqref{eq:pullback} after clearing denominators, the dyadic recursion
+behind \eqref{eq:pascal}, and the divisibility assemblies of
+Sections~\ref{sec:6}--\ref{sec:7}) have been checked in Lean; the proof
+as a whole has not been formalized.
+
+\bibliographystyle{amsplain}
+\bibliography{references}
+
+\end{document}
